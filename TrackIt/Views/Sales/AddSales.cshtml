@@ -1,0 +1,54 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model SalesVM
+
+
+<form method="post" asp-action="AddSales">
+    <input hidden asp-for="@Model.TheirSales.Id" class="form-control" placeholder="Id" value="0">
+    <div class="form-group">
+        <label asp-for="@Model.TheirSales.Sales_Date"></label>
+        <input asp-for="@Model.TheirSales.Sales_Date" class="form-control" placeholder="Name">
+        <span asp-validation-for="@Model.TheirSales.Sales_Date"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.TheirSales.Quantity"></label>
+        <input asp-for="@Model.TheirSales.Quantity" class="form-control" placeholder="Name">
+        <span asp-validation-for="@Model.TheirSales.Quantity"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.TheirSales.Rate"></label>
+        <input asp-for="@Model.TheirSales.Rate" class="form-control" placeholder="Name">
+        <span asp-validation-for="@Model.TheirSales.Rate"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.TheirSales.Client_id"></label>
+        <select asp-for="@Model.TheirSales.Client_id" asp-items="@Model.Client" class="form-control">
+            <option disabled selected>--select Vendor--</option>
+        </select>
+        <span asp-validation-for="@Model.TheirSales.Client_id"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.TheirSales.Product_id"></label>
+        <select asp-for="@Model.TheirSales.Product_id" asp-items="@Model.Product" class="form-control">
+            <option disabled selected>--Select Product--</option>
+        </select>
+        <span asp-validation-for="@Model.TheirSales.Product_id"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+</table>
