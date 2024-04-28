@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using TrackIt.Models;
 
 namespace TrackIt.Data
 {
-    public class Applicationdbcontext : DbContext
+    public class Applicationdbcontext : IdentityDbContext
     {
         public Applicationdbcontext(DbContextOptions<Applicationdbcontext>options): base(options)
         {

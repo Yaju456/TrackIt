@@ -2,7 +2,7 @@
 
 namespace TrackIt.Models
 {
-    public class ClinetClass
+    public class ClinetClass: IdentityUser
     {
         [Key]
         public int Id { get; set; }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using TrackIt.Data;
 using TrackIt.Repository;
 using TrackIt.Repository.Irepository;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<Applicationdbcontext>(options=>
 options.UseSqlServer(builder.Configuration.GetConnectionString("connect_db")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<Applicationdbcontext>();
 builder.Services.AddScoped<IunitOfwork, UnitofWork>();
+builder.Services.AddRazorPages();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,9 +29,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
