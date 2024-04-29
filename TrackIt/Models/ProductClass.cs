@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace TrackIt.Models
 {
@@ -20,5 +21,8 @@ namespace TrackIt.Models
         public string? company { get; set; }
 
         public int? In_stock { get; set; }
+
+        [ValidateNever]
+        public string? ImgUrl { get; set; }
     }
 }

@@ -16,7 +16,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="my-form">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="form-group" style="margin-bottom:10px">
+                        <label asp-for="@Model.ImgUrl"></label>
+                        <input type="file" name="file" class="form-control" />
+                    </div>
                     <input hidden asp-for="@Model.Id" id="id" class="form-control" placeholder="Id" value="0">
                     <div class="form-group">
                         <label asp-for="@Model.Name"></label>
