@@ -228,109 +228,6 @@ namespace TrackIt.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TrackIt.Models.CustomerClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("DistrictId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("LocalBodyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ProvinceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DistrictId");
-
-                    b.HasIndex("LocalBodyId");
-
-                    b.HasIndex("ProvinceId");
-
-                    b.ToTable("CustomerTable");
-                });
-
-            modelBuilder.Entity("TrackIt.Models.DistrictClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IMUCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.Property<string>("NameNp")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.Property<int>("ProvinceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProvinceId");
-
-                    b.ToTable("District");
-                });
-
-            modelBuilder.Entity("TrackIt.Models.LocalBodyClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DistrictId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IMUCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("NameNp")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.Property<bool>("isMunicipality")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DistrictId");
-
-                    b.ToTable("LocalBody");
-                });
-
             modelBuilder.Entity("TrackIt.Models.OrderClass", b =>
                 {
                     b.Property<int>("Id")
@@ -388,10 +285,6 @@ namespace TrackIt.Migrations
                     b.Property<int?>("In_stock")
                         .HasColumnType("int");
 
-                    b.Property<string>("Modal")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -403,31 +296,6 @@ namespace TrackIt.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProductTable");
-                });
-
-            modelBuilder.Entity("TrackIt.Models.ProvinceClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("IMUCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.Property<string>("NameNp")
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Province");
                 });
 
             modelBuilder.Entity("TrackIt.Models.SalesClass", b =>
@@ -474,8 +342,8 @@ namespace TrackIt.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Customer_id")
-                        .HasColumnType("int");
+                    b.Property<string>("Client_id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("InStock")
                         .IsRequired()
@@ -492,21 +360,20 @@ namespace TrackIt.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("serial_number")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Customer_id");
+                    b.HasAlternateKey("serial_number");
+
+                    b.HasIndex("Client_id");
 
                     b.HasIndex("Order_id");
 
                     b.HasIndex("Product_id");
 
                     b.HasIndex("Sales_id");
-
-                    b.HasIndex("serial_number")
-                        .IsUnique()
-                        .HasFilter("[serial_number] IS NOT NULL");
 
                     b.ToTable("StockTable");
                 });
@@ -603,49 +470,6 @@ namespace TrackIt.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TrackIt.Models.CustomerClass", b =>
-                {
-                    b.HasOne("TrackIt.Models.DistrictClass", "District")
-                        .WithMany()
-                        .HasForeignKey("DistrictId");
-
-                    b.HasOne("TrackIt.Models.LocalBodyClass", "LocalBody")
-                        .WithMany()
-                        .HasForeignKey("LocalBodyId");
-
-                    b.HasOne("TrackIt.Models.ProvinceClass", "Province")
-                        .WithMany()
-                        .HasForeignKey("ProvinceId");
-
-                    b.Navigation("District");
-
-                    b.Navigation("LocalBody");
-
-                    b.Navigation("Province");
-                });
-
-            modelBuilder.Entity("TrackIt.Models.DistrictClass", b =>
-                {
-                    b.HasOne("TrackIt.Models.ProvinceClass", "Province")
-                        .WithMany()
-                        .HasForeignKey("ProvinceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Province");
-                });
-
-            modelBuilder.Entity("TrackIt.Models.LocalBodyClass", b =>
-                {
-                    b.HasOne("TrackIt.Models.DistrictClass", "District")
-                        .WithMany()
-                        .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("District");
-                });
-
             modelBuilder.Entity("TrackIt.Models.OrderClass", b =>
                 {
                     b.HasOne("TrackIt.Models.ProductClass", "Product")
@@ -684,9 +508,9 @@ namespace TrackIt.Migrations
 
             modelBuilder.Entity("TrackIt.Models.StockClass", b =>
                 {
-                    b.HasOne("TrackIt.Models.CustomerClass", "Customer")
+                    b.HasOne("TrackIt.Models.ClinetClass", "Client")
                         .WithMany()
-                        .HasForeignKey("Customer_id");
+                        .HasForeignKey("Client_id");
 
                     b.HasOne("TrackIt.Models.OrderClass", "Order")
                         .WithMany()
@@ -704,7 +528,7 @@ namespace TrackIt.Migrations
                         .WithMany()
                         .HasForeignKey("Sales_id");
 
-                    b.Navigation("Customer");
+                    b.Navigation("Client");
 
                     b.Navigation("Order");
 
