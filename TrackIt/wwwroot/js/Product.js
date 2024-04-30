@@ -1,4 +1,7 @@
-﻿$(document).ready(function(){
+﻿$(document).ready(function () {
+    reloadTable();
+});
+function reloadTable() {
     $.ajax({
         url: '/Product/GetAll',
         type: 'Get',
@@ -26,12 +29,11 @@
             });
             $("#t-body").html(Obj);
         },
-        error: function ()
-        {
+        error: function () {
             alert("there was an error");
         }
     })
-});
+}
 
 function Delete(Url)
 {
@@ -46,10 +48,7 @@ function Delete(Url)
                     type: 'delete',
                     success: function (data) {
                         toastr["success"](data.message, "Value Deleted", { timeOut: 5000 });
-
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 2000);
+                        reloadTable();
                     },
 
                 })
@@ -84,9 +83,7 @@ $("#my-form").on("submit", function (e) {
             if (response.success) {
                 toastr["success"](response.message, "Value Added", { timeOut: 5000 });
                 document.getElementById("my-form").reset();
-                setTimeout(function () {
-                    window.location.reload();
-                }, 2000);
+                reloadTable();
             }
             else {
                 toastr["error"](response.message, "Not entered", { timeOut: 5000 });

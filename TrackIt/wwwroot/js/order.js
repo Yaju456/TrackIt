@@ -1,6 +1,10 @@
 ﻿$(document).ready(function () {
+    reloadTable();
+});
+
+function reloadTable() {
     $.ajax({
-        url:'/Order/getall',
+        url: '/Order/getall',
         type: 'Get',
         dataType: 'json',
         ContentType: 'application/jon; charset=utf-8',
@@ -14,7 +18,8 @@
                 Obj += '<td>' + value.rate + '</td>';
                 Obj += '<td>' + value.vendor.name + '</td>';
                 Obj += '<td>' + value.product.name + '</td>';
-                Obj += '<td> <a Onclick=Delete("/Order/Delete?id='+value.id+'") class="btn btn-danger"">Delete</a></td>';
+                Obj += '<td> <a class="btn btn-success" href="/Order/AddSerial?id=' + value.id + '">Add Serial</a></td>';
+                Obj += '<td> <a Onclick=Delete("/Order/Delete?id=' + value.id + '") class="btn btn-danger"">Delete</a></td>';
 
             });
             $('#t-body').html(Obj);
@@ -22,8 +27,9 @@
         Error: function (result) {
             alert(result);
         }
-    })
-});
+    });
+}
+
 
 function Delete(Url) {
     $.confirm({
@@ -37,9 +43,7 @@ function Delete(Url) {
                     success: function (data) {
                         toastr["success"](data.message, "Value Deleted" ,{ timeOut: 5000 });
 
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 2000);
+                        reloadTable();
                     }
                 })
 
@@ -77,10 +81,8 @@ $("#myForm").on("submit", function (e) {
         success: function (response) {
             if (response.success) {
                 toastr["success"](response.message, "Value Added", { timeOut: 5000 });
-                document.getElementById("myForm").reset(); 
-                setTimeout(function () {
-                    window.location.reload();
-                }, 2000);
+                document.getElementById("myForm").reset();
+                reloadTable();
             }
             else {
                 toastr["error"](response.message, "Not entered", { timeOut: 5000 });
