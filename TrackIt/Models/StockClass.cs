@@ -18,7 +18,7 @@ namespace TrackIt.Models
         [ForeignKey("Order_id")]
         public OrderClass? Order { get; set; }
 
-        public string? Client_id { get; set; }
+        public int? Client_id { get; set; }
         [ValidateNever]
         [ForeignKey("Client_id")]
         public ClinetClass? Client { get; set;}

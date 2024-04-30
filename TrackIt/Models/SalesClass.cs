@@ -18,7 +18,7 @@ namespace TrackIt.Models
         public int Rate { get; set; }
 
         [Required]
-        public string? Client_id { get; set; }
+        public int Client_id { get; set; }
 
         [ValidateNever]
         [ForeignKey("Clinent_id")]
