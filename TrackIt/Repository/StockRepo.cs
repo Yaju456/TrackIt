@@ -20,7 +20,7 @@ namespace TrackIt.Repository
             if (one!=null) 
             {
                 one.Order_id=stock.Order_id;
-                one.Client_id=stock.Client_id;
+                one.Customer_id=stock.Customer_id;
                 one.Product_id=stock.Product_id;
             }
         }
