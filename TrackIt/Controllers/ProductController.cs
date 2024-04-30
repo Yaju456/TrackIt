@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Data;
 using TrackIt.Data;
 using TrackIt.Models;
 using TrackIt.PreData;
@@ -9,17 +7,12 @@ using TrackIt.Repository.Irepository;
 
 namespace TrackIt.Controllers
 {
-    [Authorize(Roles = Roll.Admin)]
-
     public class ProductController : Controller
     {
         private readonly IunitOfwork _db;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public ProductController(IunitOfwork db, IWebHostEnvironment webHostEnvironment)
+        public ProductController(IunitOfwork db)
         {
             _db = db;
-            _webHostEnvironment = webHostEnvironment;
         }
       
 
@@ -42,31 +35,8 @@ namespace TrackIt.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Index(ProductClass obj, IFormFile? file)
+        public IActionResult Index(ProductClass obj)
         {
-            string wwwRootPath = _webHostEnvironment.WebRootPath;//for www root folder path
-
-            if (file != null)
-            {
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                string Productpath = Path.Combine(wwwRootPath, @"Images\Product");
-                if (!string.IsNullOrEmpty(obj.ImgUrl))
-                {
-                    //delete old image 
-                    var oldimage = Path.Combine(wwwRootPath, obj.ImgUrl.TrimStart('\\'));
-                    if (System.IO.File.Exists(oldimage))
-                    {
-                        System.IO.File.Delete(oldimage);
-                    }
-                }
-                using (var filestream = new FileStream(Path.Combine(Productpath, fileName), FileMode.Create))
-                {
-                    file.CopyTo(filestream);
-                }
-
-                obj.ImgUrl= @"\Images\Product\" + fileName;
-            }
-
             if (ModelState.IsValid)
             {
                 _db.Product.Add(obj);
