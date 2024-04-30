@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Identity.Client;
 using System.Text.Json.Serialization.Metadata;
@@ -10,9 +9,6 @@ using TrackIt.ViewModel;
 
 namespace TrackIt.Controllers
 {
-    [Authorize(Roles = Roll.Admin)]
-
-
     public class MainController : Controller
     {
         private readonly IunitOfwork _db;
