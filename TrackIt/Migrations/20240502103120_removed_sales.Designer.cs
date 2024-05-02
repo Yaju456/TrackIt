@@ -12,8 +12,8 @@ using TrackIt.Data;
 namespace TrackIt.Migrations
 {
     [DbContext(typeof(Applicationdbcontext))]
-    [Migration("20240430061427_Adressofcust")]
-    partial class Adressofcust
+    [Migration("20240502103120_removed_sales")]
+    partial class removed_sales
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -346,14 +346,13 @@ namespace TrackIt.Migrations
                         .IsRequired()
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("In_Stock")
+                        .HasColumnType("int");
+
                     b.Property<int>("Product_id")
                         .HasColumnType("int");
 
                     b.Property<int?>("Quantity")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rate")
                         .IsRequired()
                         .HasColumnType("int");
 
@@ -430,43 +429,7 @@ namespace TrackIt.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Province");
-                });
-
-            modelBuilder.Entity("TrackIt.Models.SalesClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Client_id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Clinent_id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Product_id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rate")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Sales_Date")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Clinent_id");
-
-                    b.HasIndex("Product_id");
-
-                    b.ToTable("SalesTable");
+                    b.ToTable("Province", (string)null);
                 });
 
             modelBuilder.Entity("TrackIt.Models.StockClass", b =>
@@ -491,9 +454,6 @@ namespace TrackIt.Migrations
                     b.Property<int>("Product_id")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Sales_id")
-                        .HasColumnType("int");
-
                     b.Property<string>("serial_number")
                         .HasColumnType("nvarchar(450)");
 
@@ -504,8 +464,6 @@ namespace TrackIt.Migrations
                     b.HasIndex("Order_id");
 
                     b.HasIndex("Product_id");
-
-                    b.HasIndex("Sales_id");
 
                     b.HasIndex("serial_number")
                         .IsUnique()
@@ -668,23 +626,6 @@ namespace TrackIt.Migrations
                     b.Navigation("vendor");
                 });
 
-            modelBuilder.Entity("TrackIt.Models.SalesClass", b =>
-                {
-                    b.HasOne("TrackIt.Models.ClinetClass", "Clinet")
-                        .WithMany()
-                        .HasForeignKey("Clinent_id");
-
-                    b.HasOne("TrackIt.Models.ProductClass", "Product")
-                        .WithMany()
-                        .HasForeignKey("Product_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Clinet");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("TrackIt.Models.StockClass", b =>
                 {
                     b.HasOne("TrackIt.Models.CustomerClass", "Customer")
@@ -703,17 +644,11 @@ namespace TrackIt.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrackIt.Models.SalesClass", "Sales")
-                        .WithMany()
-                        .HasForeignKey("Sales_id");
-
                     b.Navigation("Customer");
 
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Sales");
                 });
 #pragma warning restore 612, 618
         }

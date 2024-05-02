@@ -16,12 +16,6 @@ namespace TrackIt.Models
         [ValidateNever]
         [ForeignKey("Order_id")]
         public OrderClass? Order { get; set; }
-
-        //public string? Client_id { get; set; }
-        //[ValidateNever]
-        //[ForeignKey("Client_id")]
-        //public ClinetClass? Client { get; set;}
-
         public int? Customer_id { get; set; }
         [ValidateNever]
         [ForeignKey("Customer_id")]
@@ -35,12 +29,5 @@ namespace TrackIt.Models
         [ValidateNever]
         [ForeignKey("Product_id")]
         public ProductClass? Product { get; set; }
-
-        public int? Sales_id { get; set; }
-        [ValidateNever]
-        [ForeignKey("Sales_id")]
-        public SalesClass? Sales { get; set; }
-
-
     }
 }

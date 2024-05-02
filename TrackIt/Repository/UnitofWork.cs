@@ -11,11 +11,12 @@ namespace TrackIt.Repository
         public IOrder? Order { get; private set; }
 
         public Iproduct? Product { get; private set; }
-        public ISales? sales { get; private set; }
-
+       
         public IStock? Stock { get; private set; }
 
         public IVendor? Vendor { get; private set; }
+
+        public ICustomer? customer { get; private set;}
 
         public UnitofWork(Applicationdbcontext db)
         {
@@ -23,9 +24,9 @@ namespace TrackIt.Repository
             Client= new ClientRepo(db);
             Order= new OrderRepo(db);
             Product= new ProductRepo(db);
-            sales = new SalesRepo(db);
-            Stock= new StockRepo(db);
+           Stock= new StockRepo(db);
             Vendor= new VendorRepo(db);
+            customer= new CustomerRepo(db);
 
         }
         public void Save()

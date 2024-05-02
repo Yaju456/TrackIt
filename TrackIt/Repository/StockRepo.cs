@@ -22,6 +22,10 @@ namespace TrackIt.Repository
                 one.Order_id=stock.Order_id;
                 one.Customer_id=stock.Customer_id;
                 one.Product_id=stock.Product_id;
+                if(one.Customer_id==null)
+                {
+                    one.InStock = "Y";
+                }
             }
         }
     }

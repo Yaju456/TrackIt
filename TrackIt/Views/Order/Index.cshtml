@@ -33,12 +33,6 @@
                         <input id="qua" asp-for="@Model.Quantity" class="form-control" placeholder="Name">
                         <span asp-validation-for="@Model.Quantity"></span>
                     </div>
-
-                    <div class="form-group">
-                        <label asp-for="@Model.Rate"></label>
-                        <input id="rate" asp-for="@Model.Rate" class="form-control" placeholder="Name">
-                        <span asp-validation-for="@Model.Rate"></span>
-                    </div>
                     <div class="form-group">
                         <label asp-for="@Model.vendor_id"></label>
                         <select id="V-id" asp-for="@Model.vendor_id" asp-items="@ViewBag.Vendor_id" class="form-control">
@@ -76,7 +70,7 @@
                 Quantity
             </th>
             <th>
-                Rate
+                In Stock
             </th>
             <th>
                 Vendor Name
@@ -84,7 +78,7 @@
             <th>
                 Product Name
             </th>
-            <th col-span="2">
+            <th colspan="2" class="text-center">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
                     Add
                 </button>

@@ -9,7 +9,7 @@ using TrackIt.Repository.Irepository;
 
 namespace TrackIt.Controllers
 {
-    [Authorize(Roles = Roll.Admin)]
+   // [Authorize(Roles = Roll.Admin)]
 
     public class ProductController : Controller
     {
@@ -26,6 +26,12 @@ namespace TrackIt.Controllers
         public JsonResult GetAll()
         {
             List<ProductClass> Products = _db.Product.getAll(prop: null).ToList();
+            foreach(var data in Products)
+            {
+                data.In_stock = _db.Stock.getSpecifics(u => u.Product_id == data.Id && u.InStock=="Y", null).Count();
+                _db.Product.Update(data);
+            }
+            _db.Save();
             return new JsonResult(Products);
         }
         public IActionResult Index()
@@ -69,13 +75,12 @@ namespace TrackIt.Controllers
 
             if (ModelState.IsValid)
             {
+
+
                 _db.Product.Add(obj);
                 _db.Save();
-                return Json(new
-                {
-                    message = "New data Added",
-                    success = true
-                }); ;
+                return RedirectToAction("Index");
+                
             }
             else
             {
@@ -88,6 +93,20 @@ namespace TrackIt.Controllers
             ProductClass To_delete = _db.Product.GetOne(u => u.Id == id, prop:null);
             if (To_delete != null)
             {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;//for www root folder path
+                string Productpath = Path.Combine(wwwRootPath, @"Images\Product");
+                if (!string.IsNullOrEmpty(To_delete.ImgUrl))
+                {
+                    //delete old image 
+                    var oldimage = Path.Combine(wwwRootPath, To_delete.ImgUrl.TrimStart('\\'));
+                    if (System.IO.File.Exists(oldimage))
+                    {
+                        System.IO.File.Delete(oldimage);
+                    }
+                }
+               
+
+
                 _db.Product.Delete(To_delete);
                 _db.Save();
                 return Json(new

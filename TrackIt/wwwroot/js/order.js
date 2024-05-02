@@ -15,10 +15,10 @@ function reloadTable() {
                 Obj += '<td>' + value.id + '</td>';
                 Obj += '<td>' + value.arival.substr(0, 10) + '</td>';
                 Obj += '<td>' + value.quantity + '</td>';
-                Obj += '<td>' + value.rate + '</td>';
+                Obj += '<td>' + value.in_Stock + '</td>';
                 Obj += '<td>' + value.vendor.name + '</td>';
                 Obj += '<td>' + value.product.name + '</td>';
-                Obj += '<td> <a class="btn btn-success" href="/Order/AddSerial?id=' + value.id + '">Add Serial</a></td>';
+                Obj += '<td> <a class="btn btn-success" href="/Order/AddSerial?id=' + value.id + '">View Order</a></td>';
                 Obj += '<td> <a Onclick=Delete("/Order/Delete?id=' + value.id + '") class="btn btn-danger"">Delete</a></td>';
 
             });
@@ -60,7 +60,6 @@ $("#myForm").on("submit", function (e) {
     var id = $("#ID").val();
     var Arival = $("#arival").val();
     var Quantity = $("#qua").val();
-    var Rate = $("#rate").val();
     var Vendor_id = $("#V-id").val();
     var Product_id = $("#P-id").val();
 
@@ -68,7 +67,6 @@ $("#myForm").on("submit", function (e) {
         id: id,
         arival: Arival,
         quantity: Quantity,
-        rate: Rate,
         vendor_id: Vendor_id,
         product_id: Product_id,
     }

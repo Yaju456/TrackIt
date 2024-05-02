@@ -35,6 +35,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label asp-for="@Model.Modal"></label>
+                        <input asp-for="@Model.Modal" class="form-control" placeholder="Name" id="Description">
+                        <span asp-validation-for="@Model.Modal"></span>
+                    </div>
+
+                    <div class="form-group">
                         <label asp-for="@Model.Category"></label>
                         <select asp-for="@Model.Category" asp-items="@ViewBag.CatagoryType" class="form-control" id="C-at">
                             <option disabled selected>--select Catagory--</option>

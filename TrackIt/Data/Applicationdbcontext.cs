@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Build.Evaluation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using TrackIt.Models;
 
@@ -23,8 +24,6 @@ namespace TrackIt.Data
         public DbSet<ClinetClass> ClientTable { get; set;}
         public DbSet<OrderClass> OrderTable { get; set; }
 
-        public DbSet<SalesClass> SalesTable { get; set; }
-
         public DbSet<StockClass> StockTable { get; set; }
 
         public DbSet<CustomerClass> CustomerTable { get; set; }
@@ -36,6 +35,9 @@ namespace TrackIt.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<StockClass>().HasIndex(a => a.serial_number).IsUnique();
+
+            modelBuilder.Entity<ProvinceClass>().ToTable("Province");
+
         }
     }
 }

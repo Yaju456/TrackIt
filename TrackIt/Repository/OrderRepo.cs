@@ -23,6 +23,8 @@ namespace TrackIt.Repository
                 two.Product_id=order.Product_id;
                 two.vendor=order.vendor;
                 two.vendor_id=order.vendor_id;
+                two.In_Stock=order.In_Stock;
+                two.Quantity=order.Quantity;
                 _dbSet.Update(two);
             }
         }

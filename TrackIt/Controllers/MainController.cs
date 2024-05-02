@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Identity.Client;
 using System.Text.Json.Serialization.Metadata;
+using TrackIt.Data;
 using TrackIt.Models;
 using TrackIt.PreData;
 using TrackIt.Repository.Irepository;
@@ -10,15 +11,17 @@ using TrackIt.ViewModel;
 
 namespace TrackIt.Controllers
 {
-    [Authorize(Roles = Roll.Admin)]
+    //[Authorize(Roles = Roll.Admin)]
 
 
     public class MainController : Controller
     {
         private readonly IunitOfwork _db;
-        public MainController(IunitOfwork db)
+        private readonly Applicationdbcontext _context;
+        public MainController(IunitOfwork db, Applicationdbcontext context)
         {
             _db = db;
+            _context = context;
         }
         public IActionResult Index()
         {
@@ -29,6 +32,7 @@ namespace TrackIt.Controllers
         {
             return View();
         }
+
 
         [HttpPost]
         public IActionResult Addvendor(VendorClass obj)
@@ -43,22 +47,100 @@ namespace TrackIt.Controllers
             { return View(obj); }
         }
 
-        public IActionResult AddClient()
+        public JsonResult getProvince()
         {
-            return View();
+            List<ProvinceClass> data= _context.Province.ToList();
+            return new JsonResult(data);
         }
-        [HttpPost]
-        public IActionResult AddClient(ClinetClass one)
+
+        public JsonResult getLocalBody(int? id)
         {
-            if(ModelState.IsValid) 
+            List<LocalBodyClass> data = _context.LocalBody.Where(u => u.DistrictId == id).ToList();
+            return new JsonResult(data);
+        }
+        public JsonResult getDistrict(int? id)
+        {
+            List<DistrictClass> data= _context.District.Where(u=>u.ProvinceId==id).ToList();
+            return new JsonResult(data);
+        }
+
+        public JsonResult getAllcutomer()
+        {
+            List<CustomerClass> list = _db.customer.getAll(prop: "Province,District,LocalBody").ToList();
+            return new JsonResult(list);
+        }
+        public IActionResult CustomerInfo()
+        {
+            CustomerClass customer = new CustomerClass();
+            return View(customer);
+        }
+        
+        [HttpPost]
+        public IActionResult CustomerInfo(CustomerClass obj)
+        {
+            if(ModelState.IsValid)
             {
-                _db.Client.Add(one);
-                _db.Save();
-                return Json(new { Data = _db.Client.getAll(prop: "").ToList() });
+                if(obj.Id== 0)
+                {
+                    _db.customer.Add(obj);
+                    _db.Save();
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Data Added Successfully",
+                        type= "Value Added"
+                    });
+                }
+                else
+                {
+                    _db.customer.Update(obj);
+                    _db.Save();
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Data Edited Successfully",
+                        type= "Value Edited"
+                    });
+                }
+                
             }
             else
-            { 
-                return View(one); 
+            {
+                return Json(new
+                {
+                    success=false,
+                    message="some error in model state"
+                });
+            }
+        }
+
+        public IActionResult Delete(int? id) 
+        {
+            CustomerClass man = _db.customer.GetOne(u => u.Id == id,prop:null);
+            if(man!=null) 
+            {
+                List<StockClass> Sman = _db.Stock.getSpecifics(u => u.Customer_id == id, prop: null).ToList();
+                foreach(var a in Sman)
+                {
+                    a.Customer_id = null;
+                    _db.Stock.Update(a);
+                }
+                _db.Save();
+                _db.customer.Delete(man);
+                _db.Save();
+                return Json(new
+                {
+                    Success = true,
+                    message = "Customer of id " + man.Id + " is Deleted"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    Success = false,
+                    message = "Customer of given id not found"
+                });
             }
         }
     }

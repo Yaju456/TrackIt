@@ -11,11 +11,11 @@ namespace TrackIt.Models
         [Required(ErrorMessage ="Arival Date is required")] 
         public DateTime? Arival{ get; set; }
 
+        [Range(1,100)]
         [Required(ErrorMessage ="Quantity is requried")]
         public int? Quantity { get; set; }
 
-        [Required(ErrorMessage ="Rate is requierd")]
-        public int? Rate{ get; set; }
+        public int? In_Stock{ get; set; }
 
         [Required]
         public int vendor_id{ get; set; }
