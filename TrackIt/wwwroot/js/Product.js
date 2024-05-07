@@ -24,7 +24,7 @@ function reloadTable() {
                     Instock = value.in_stock;
                 }
                 Obj += '<td>' + Instock + '</td>';
-                Obj += '<td><a onclick=Delete("/Product/Delete?id=' + value.id + '") class="btn btn-danger">Delete</a></td>';
+                Obj += '<td><a class="btn btn-danger" onclick=Delete("/Product/Delete?id=' + value.id + '")><i class="bi bi-trash"></i> Delete</a></td>';
 
             });
             $("#t-body").html(Obj);

@@ -18,7 +18,15 @@ namespace TrackIt.Repository
         
         public void Update(VendorClass obj)
         {
-            throw new NotImplementedException();
+            VendorClass To_update= _versions.FirstOrDefault(u=>u.Id==obj.Id);
+            if (To_update != null)
+            {
+                To_update.Name = obj.Name;
+                To_update.Description = obj.Description;    
+                To_update.PhoneNumber = obj.PhoneNumber;
+                _versions.Update(To_update);
+            }
+
         }
     }
 }

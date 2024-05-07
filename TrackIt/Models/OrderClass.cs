@@ -11,12 +11,9 @@ namespace TrackIt.Models
         [Required(ErrorMessage ="Arival Date is required")] 
         public DateTime? Arival{ get; set; }
 
-        [Range(1,100)]
-        [Required(ErrorMessage ="Quantity is requried")]
-        public int? Quantity { get; set; }
-
-        public int? In_Stock{ get; set; }
-
+        [Required]
+        public string? Invoice_no { get; set; }
+      
         [Required]
         public int vendor_id{ get; set; }
 
@@ -24,10 +21,5 @@ namespace TrackIt.Models
         [ForeignKey("vendor_id")]
         public VendorClass? vendor { get; set; }
 
-        [Required]
-        public int Product_id { get; set; }
-        [ValidateNever]
-        [ForeignKey("Product_id")]
-        public ProductClass? Product { get; set; }
     }
 }

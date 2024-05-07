@@ -1,0 +1,113 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model BillClass
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddProduct">
+                    <input value="0" hidden type="number" id="ID" />
+                    <div class="form-group">
+                        <label for="ProductName">Product</label>
+                        <select asp-items="@ViewBag.ProductName"  id="ProductName" class="form-select">
+                            <option disabled selected value="0">--select product--</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Rate">Rate</label>
+                        <input type="number" class="form-control" id="Rate" placeholder="Rate">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Quantity">Quantity</label>
+                        <input type="number" class="form-control" id="Quantity" placeholder="Quantity">
+                    </div>
+                    <div id="tada">
+
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<form id="Client" method="post" asp-controller="bill" asp-action="Addbill">
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="ClientName">Customer Name</label>
+            <select asp-items="@ViewBag.CustomerName"  asp-for="@Model.Customer_id" id="ClientName" class="form-select">
+                <option disabled selected value="0">--select Customer--</option>
+            </select>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="ClientNumber">Customer Number</label>
+            <select asp-items="@ViewBag.CustomerNumber" disabled id="ClientNumber" class="form-select">
+                <option disabled selected value="0">--select Customer--</option>
+            </select>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="Description">Description</label>
+            <input type="text" class="form-control" id="Description" asp-for="@Model.Description" placeholder="Description" />
+        </div>
+    </div>
+    <div class="form-row">
+
+        <div class="form-group col-md-4">
+            <label for="Payment">Received Payment</label>
+            <input  class="form-control" id="Payment" asp-for="@Model.payment" placeholder="Payment Amount" />
+        </div>
+        <input asp-for="@Model.total" hidden id="sub-total" />
+        <div class="form-group col-md-4">
+            
+            <button class="btn btn-primary" type="submit" style="position:absolute; bottom:0;">Generate Report</button>
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Product Name
+        </th>
+        <th>
+            Rate
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Total
+        </th>
+        <th colspan="2">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                <i class="bi bi-file-earmark-plus-fill"></i> Add
+            </button>
+        </th>
+    </tr>
+    </thead>
+    <tbody id="t-body">
+
+    </tbody>
+</table>
+@section Scripts
+{
+    <script src="~/js/CreateBill.js"></script>
+}

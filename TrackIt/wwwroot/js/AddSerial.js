@@ -3,7 +3,16 @@
 });
 function reloadTable() {
     var Order_id = $("#Value-id").val();
-    var URL = '/order/get?id=' + Order_id;
+    console.log(Order_id);
+    var URL = "";
+    if (Order_id == 0) {
+        URL = '/order/getMost';
+    }
+    else
+    {
+        URL = '/order/get?id=' + Order_id;
+    }
+     
 
     $.ajax({
         url: URL,

@@ -24,6 +24,11 @@ namespace TrackIt.Repository
             _dbset.Remove(obj);
         }
 
+        public void DeleteMost(List<T> list)
+        {
+            _dbset.RemoveRange(list);
+        }
+
         public IEnumerable<T> getAll(string? prop)
         {
             IQueryable<T> one= _dbset.AsQueryable();

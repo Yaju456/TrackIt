@@ -18,6 +18,14 @@ namespace TrackIt.Repository
 
         public ICustomer? customer { get; private set;}
 
+        public Iorderhasproduct? Orderhasproduct { get; private set; }
+
+        public IBucket? Bucket { get; private set; }
+
+        public Ibill? Bill {  get; private set; }
+
+        public IbillhasProduct? Billhasproduct { get; private set; }
+
         public UnitofWork(Applicationdbcontext db)
         {
             _db = db;
@@ -27,6 +35,10 @@ namespace TrackIt.Repository
            Stock= new StockRepo(db);
             Vendor= new VendorRepo(db);
             customer= new CustomerRepo(db);
+            Orderhasproduct = new OrderhasProductrepo(db);
+            Bucket= new BucketRepo(db);
+            Bill= new BillRepo(db);
+            Billhasproduct= new billhasProductRepo(db);
 
         }
         public void Save()

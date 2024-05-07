@@ -14,13 +14,11 @@ function reloadTable() {
                 Obj += '<tr>';
                 Obj += '<td>' + value.id + '</td>';
                 Obj += '<td>' + value.arival.substr(0, 10) + '</td>';
-                Obj += '<td>' + value.quantity + '</td>';
-                Obj += '<td>' + value.in_Stock + '</td>';
+                Obj += '<td>' + value.invoice_no + '</td>';
                 Obj += '<td>' + value.vendor.name + '</td>';
-                Obj += '<td>' + value.product.name + '</td>';
-                Obj += '<td> <a class="btn btn-success" href="/Order/AddSerial?id=' + value.id + '">View Order</a></td>';
-                Obj += '<td> <a Onclick=Delete("/Order/Delete?id=' + value.id + '") class="btn btn-danger"">Delete</a></td>';
-
+                Obj += '<td> <a class="btn btn-secondary" href="/Order/AddSerial?id=' + value.id + '"><i class="bi bi-door-open-fill"></i> View Order</a></td>';
+                Obj += '<td> <a Onclick=Delete("/Order/Delete?id=' + value.id + '") class="btn btn-danger"><i class="bi bi-trash"></i> Delete</a></td>';
+                Obj += '<td> <a class="btn btn-success" href="/Order/ViewOrder?id=' + value.id + '"><i class="bi bi-view-list"></i> View</td>';
             });
             $('#t-body').html(Obj);
         },

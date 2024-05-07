@@ -28,6 +28,12 @@ namespace TrackIt.Controllers
             return View();
         }
 
+        public JsonResult GetVendor()
+        {
+            List<VendorClass> data =_db.Vendor.getAll(prop:null).ToList();
+            return new JsonResult(data);
+        }
+
         public IActionResult Addvendor() 
         {
             return View();
@@ -39,12 +45,41 @@ namespace TrackIt.Controllers
         {
             if(ModelState.IsValid) 
             {
-                _db.Vendor.Add(obj);
-                _db.Save();
-                return Json(new { Data=_db.Vendor.getAll(prop:"").ToList()});
+                if(obj.Id==0)
+                {
+                    _db.Vendor.Add(obj);
+                    _db.Save();
+                    return Json(new
+                    {
+                        success = true,
+                        message = "New Vendor Added"
+                    });
+                }
+                else
+
+                {
+                    VendorClass vendor = _db.Vendor.GetOne(u => u.Id == obj.Id, null);
+                    vendor.Id = obj.Id;
+                    vendor.PhoneNumber = obj.PhoneNumber;
+                    vendor.Description = obj.Description;
+                    _db.Vendor.Update(vendor);
+                    _db.Save();
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Vendor Updated"
+                    });
+                }
+                
             }
             else
-            { return View(obj); }
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Something went wrong"
+                });
+            }
         }
 
         public JsonResult getProvince()
@@ -80,29 +115,41 @@ namespace TrackIt.Controllers
         {
             if(ModelState.IsValid)
             {
-                if(obj.Id== 0)
+                try
                 {
-                    _db.customer.Add(obj);
-                    _db.Save();
+
+
+                    if (obj.Id == 0)
+                    {
+                        _db.customer.Add(obj);
+                        _db.Save();
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Data Added Successfully",
+                            type = "Value Added"
+                        });
+                    }
+                    else
+                    {
+                        _db.customer.Update(obj);
+                        _db.Save();
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Data Edited Successfully",
+                            type = "Value Edited"
+                        });
+                    }
+                }
+                catch (Exception ex) 
+                {
                     return Json(new
                     {
-                        success = true,
-                        message = "Data Added Successfully",
-                        type= "Value Added"
+                        success=false,
+                        message=ex.Message,
                     });
                 }
-                else
-                {
-                    _db.customer.Update(obj);
-                    _db.Save();
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Data Edited Successfully",
-                        type= "Value Edited"
-                    });
-                }
-                
             }
             else
             {

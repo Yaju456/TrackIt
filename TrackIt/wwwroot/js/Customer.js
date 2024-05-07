@@ -84,13 +84,19 @@ function reloadTable() {
                 Obj += '<tr class="text-center">';
                 Obj += '<td>' + value.id + '</td>';
                 Obj += '<td>' + value.name + '</td>';
+                if (value.phoneNumber != null) {
+                    Obj += '<td>' + value.phoneNumber + '</td>';
+
+                }
+
                 if (value.provinceId != null) {
                     Obj += '<td>' + value.province.name + '</td>';
                     Obj += '<td>' + value.district.name + '</td>';
                     Obj += '<td>' + value.localBody.name + '</td>';
                 }
-                Obj += '<td><button type="button" class="btn  btn-success" data-toggle="modal" data-target="#exampleModal" onclick="OneAdd(' + value.id + ', \'' + value.name + '\')">Edit</button></td>';                
-                Obj += '<td><a class="btn btn-danger" onclick=Delete("/Main/Delete?id=' + value.id + '")>Delete</a></td>';
+                Obj += '<td><button type="button" class="btn  btn-success" data-toggle="modal" data-target="#exampleModal" \
+                onclick="OneAdd(' + value.id + ', \'' + value.name + '\'' + value.phoneNumber+')"><i class="bi bi-pencil-square"></i> Edit</button></td>';                
+                Obj += '<td><a class="btn btn-danger" onclick=Delete("/Main/Delete?id=' + value.id + '")><i class="bi bi-trash"></i> Delete</a></td>';
                 Obj +='</tr>'
             });
             $("#t-body").html(Obj);
@@ -105,6 +111,7 @@ function reloadTable() {
 function OneAdd(id, name) {
     $("#ID").val(id);
     $("#Name").val(name);
+    $("#phoneNumber").val(phoneNumber);
 }
 function Delete(Url) {
     $.confirm({
@@ -133,12 +140,14 @@ $("#myForm").on("submit", function (e) {
     e.preventDefault();
     var Id = $("#ID").val();
     var Name = $("#Name").val();
+    var PhoneNumber = $("#phoneNumber").val();
     var Province = $("#ProvinceOption").val();
     var District= $("#DistrictOption").val();
     var LocalBody = $("#LocalBodyOption").val();
     var obj = {
         id: Id,
         name: Name,
+        phoneNumber: PhoneNumber,
         provinceId: Province,
         districtId: District,
         localBodyId: LocalBody

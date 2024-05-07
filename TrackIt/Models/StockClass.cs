@@ -29,5 +29,10 @@ namespace TrackIt.Models
         [ValidateNever]
         [ForeignKey("Product_id")]
         public ProductClass? Product { get; set; }
+
+        public int? billhasProduct_id { get; set; }
+        [ValidateNever]
+        [ForeignKey("billhasProduct_id")]
+        public BillhasProductClass? BillhasProduct{ get; set; }
     }
 }

@@ -11,6 +11,9 @@ namespace TrackIt.Models
         [Required]
         public string? Name { get; set; }
 
+        [Range(9800000000,9899999999)]
+        public long? PhoneNumber { get; set; }
+
         public int? ProvinceId { get; set; }
         [ValidateNever]
         [ForeignKey("ProvinceId")]

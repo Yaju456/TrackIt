@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.ObjectModelRemoting;
 using Microsoft.Identity.Client;
 using NuGet.Frameworks;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text.Json.Serialization.Metadata;
 using TrackIt.Data;
+using TrackIt.Migrations;
 using TrackIt.Models;
 using TrackIt.PreData;
 using TrackIt.Repository.Irepository;
@@ -14,14 +17,16 @@ using TrackIt.ViewModel;
 
 namespace TrackIt.Controllers
 {
-//    [Authorize(Roles = Roll.Admin)]
+    [Authorize(Roles = Roll.Admin+","+Roll.client)]
 
     public class OrderController : Controller
     {
         private readonly IunitOfwork _db;
-        public OrderController(IunitOfwork db)
+        private readonly UserManager<IdentityUser> _userManager;
+        public OrderController(IunitOfwork db, UserManager<IdentityUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -50,13 +55,7 @@ namespace TrackIt.Controllers
         public JsonResult GetAll()
         {
 
-            List<OrderClass> order = _db.Order.getAll(prop: "vendor,Product").ToList();
-            foreach(var data in order)
-            {
-                data.In_Stock = _db.Stock.getSpecifics(u => u.Order_id == data.Id && u.InStock == "Y", null).Count();
-                data.Quantity= _db.Stock.getSpecifics(u => u.Order_id == data.Id, null).Count();
-                _db.Order.Update(data);
-            }
+            List<OrderClass> order = _db.Order.getAll(prop: "vendor").ToList();
             _db.Save();
             return new JsonResult(order);
         }
@@ -67,53 +66,125 @@ namespace TrackIt.Controllers
             return new JsonResult(list);
         }
 
-        [HttpPost]
-        public IActionResult Index(OrderClass obj)
+
+        public JsonResult GetMost()
         {
+            List<StockClass> list = _db.Stock.getAll(prop: "Product,Customer").ToList();
+            return new JsonResult(list);
+        }
+
+
+        public IActionResult newOrder()
+        {
+            IEnumerable<SelectListItem> Products= _db.Product.getAll(prop:null).Select(u=> new SelectListItem
+            {
+                Text=u.Id + " " + u.Name,
+                Value=u.Id.ToString(),
+            });
+
+            IEnumerable<SelectListItem> Vendor = _db.Vendor.getAll(prop: null).Select(u => new SelectListItem
+            {
+                Text = u.Id + " " + u.Name,
+                Value = u.Id.ToString(),
+            });
+            ViewBag.Products = Products;  
+            ViewBag.Vendor = Vendor;
+            return View();
+        }
+
+        public JsonResult GetBucket()
+        {
+            string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<BucketClass> allBuckets= _db.Bucket.getSpecifics(u=>u.User_id==UserId,prop: "Product").ToList();
+            return new JsonResult(allBuckets);
+        }
+
+        public IActionResult bucketAdd(BucketClass obj)
+        {
+            obj.User_id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
-                obj.In_Stock = obj.Quantity;
-                _db.Order.Add(obj);
-                _db.Save();
-                OrderClass justOrder = _db.Order.GetOne(a => a.Id == obj.Id, prop: "Product");
-                
-                //This code is to add each element in the stock
-                for (int i = 0; i < justOrder.Quantity; i++)
+                if(obj.Id==0)
                 {
-                    StockClass oneItem = new StockClass();
-                    oneItem.Order_id = justOrder.Id;
-                   // oneItem.serial_number = "OrderNO"+justOrder.Id+ justOrder.Product.Name + "id" + justOrder.Product.Id + "vendor" + justOrder.vendor_id + "no"+i;
-                    oneItem.InStock = "Y";
-                    oneItem.Product_id = justOrder.Product.Id;
-                    _db.Stock.Add(oneItem);
+                    _db.Bucket.Add(obj);
+                    _db.Save();
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Product Added"
+                    });
                 }
-                _db.Save();
+                else
+                {
+                    BucketClass buck = _db.Bucket.GetOne(u => u.Id == obj.Id,prop:null);
+                    if(buck !=null)
+                    {
+                        buck.Product_id = obj.Product_id;
+                        buck.Quantity= obj.Quantity;
+                        _db.Bucket.Update(buck);
+                        _db.Save();
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Product Updated"
+                        });
+                    }
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Product not found"
+                    });
 
+                }
+            }
+            else
+            {
                 return Json(new
                 {
-                    success=true,
-                    message="Successful data entry"
-                });;
+                    success=false,
+                    message="Modal State was not valid"
+                });
+            }
+        }
+
+        public IActionResult DeleteBucket(int? id)
+        {
+            BucketClass To_Delete = _db.Bucket.GetOne(u => u.Id == id, prop: null);
+            if (To_Delete != null)
+            {
+                _db.Bucket.Delete(To_Delete);
+                _db.Save();
+                return Json(new
+                {
+                    success = true,
+                    message = To_Delete.Id + " id's recorde is Deleted"
+                });
             }
             else
             {
                 return Json(new
                 {
                     success = false,
-                    message = "Error Modal State"
-                }); ;
+                    message = "There was error while deleting"
+                });
             }
         }
-
         public IActionResult AddSerial(int? id)
         {
-             IEnumerable < SelectListItem > Customer_id = _db.customer.getAll(prop: null).Select(u => new SelectListItem
+            if(id!=null)
             {
-                Text = u.Id + " " + u.Name,
-                Value = u.Id.ToString()
-            });
-            ViewBag.Customer_id = Customer_id;
-            return View(id);
+                IEnumerable < SelectListItem > Customer_id = _db.customer.getAll(prop: null).Select(u => new SelectListItem
+                {
+                    Text = u.Id + " " + u.Name,
+                    Value = u.Id.ToString()
+                });
+                ViewBag.Customer_id = Customer_id;
+                return View(id);
+            }
+            else
+            {
+                return View(0);
+            }
         }
 
         [HttpPost]
@@ -187,7 +258,7 @@ namespace TrackIt.Controllers
                     }
                     
                     one.serial_number = data.serial_no;
-                    one.Product_id = _db.Order.GetOne(u => u.Id == data.order_id,prop:null).Product_id;
+                    //one.Product_id = _db.Order.GetOne(u => u.Id == data.order_id,prop:null).Product_id;
                     _db.Stock.Add(one);
                     _db.Save();
                     
@@ -218,8 +289,17 @@ namespace TrackIt.Controllers
         }
 
 
+        public IActionResult ViewOrder(int? id)
+        {
+            OrderClass one = _db.Order.GetOne(u => u.Id == id, prop: "vendor");
+            return View(one);
+        }
 
-
+        public JsonResult getVewOrder(int? id) 
+        {
+            List<OrderhasProducts> list = _db.Orderhasproduct.getSpecifics(u => u.Order_id == id, prop: "Product").ToList();
+            return new JsonResult(list);
+        }
 
 
         public IActionResult Deletestock(int? id)
@@ -263,6 +343,60 @@ namespace TrackIt.Controllers
                 {
                     success= false,
                     message="There was error while deleting"
+                });
+            }
+        }
+        public IActionResult AddnewOrder(OrderClass man)
+        {
+
+            if(ModelState.IsValid) 
+            {
+                try
+                {
+                    _db.Order.Add(man);
+                    _db.Save();
+                    string User_id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    List<BucketClass> buckets = _db.Bucket.getSpecifics(u=>u.User_id==User_id,null).ToList();
+                    foreach ( var a in buckets)
+                    {
+                        OrderhasProducts one = new OrderhasProducts();
+                        one.Product_id = Convert.ToInt32(a.Product_id);
+                        one.Order_id = man.Id;
+                        one.Quantity = Convert.ToInt32(a.Quantity);
+                        for (int i = 0; i < a.Quantity; i++)
+                        {
+                            StockClass Stock= new StockClass();
+                            Stock.Product_id = one.Product_id;
+                            Stock.Order_id = man.Id;
+                            Stock.InStock = "Y";
+                            _db.Stock.Add(Stock);   
+                        }
+                        _db.Orderhasproduct.Add(one);
+                    }
+                    _db.Bucket.DeleteMost(buckets);
+                    _db.Save();
+                    return Json(new
+                    {
+                        success=true,
+                        message="Order Added"
+                    });
+                }
+                catch (Exception ex) 
+                {
+
+                    return Json(new
+                    {
+                        success= false,
+                        message=ex.Message
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success=false,
+                    message="Invalid Modal State"
                 });
             }
         }

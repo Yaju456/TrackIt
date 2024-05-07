@@ -31,11 +31,19 @@ namespace TrackIt.Data
         public DbSet<ProvinceClass> Province { get; set; }
         public DbSet<DistrictClass> District { get; set; }
         public DbSet<LocalBodyClass> LocalBody { get; set; }
+
+        public DbSet<OrderhasProducts> OrderhasProducts { get; set; }
+
+        public DbSet<BucketClass> Bucket { get; set; }
+
+        public DbSet<BillClass> Bill { get; set; }
+        public DbSet<BillhasProductClass> billhasProduct { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<StockClass>().HasIndex(a => a.serial_number).IsUnique();
-
+            modelBuilder.Entity<OrderClass>().HasIndex(a=>a.Invoice_no).IsUnique();
+            modelBuilder.Entity<CustomerClass>().HasCheckConstraint("PhoneNumberCheck", "PhoneNumber between 9800000000 and 9899999999");
             modelBuilder.Entity<ProvinceClass>().ToTable("Province");
 
         }

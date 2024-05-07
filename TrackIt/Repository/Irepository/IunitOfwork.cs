@@ -9,6 +9,13 @@
         public IStock? Stock { get;}
         public IVendor? Vendor { get;}
 
+        public Iorderhasproduct? Orderhasproduct { get;}
+
+        public IBucket? Bucket { get;}
+
+        public Ibill? Bill { get;}
+
+        public IbillhasProduct? Billhasproduct { get;}
         void Save();
     }
 }

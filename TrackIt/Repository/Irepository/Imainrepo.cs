@@ -12,5 +12,7 @@ namespace TrackIt.Repository.Irepository
         public IEnumerable<T> getSpecifics(Expression<Func<T,bool>> filter,string? prop);
         public T GetOne(Expression<Func<T,bool>> filter,string? prop);
 
+        public void DeleteMost(List<T> list);
+
     }
 }

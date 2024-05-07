@@ -20,11 +20,8 @@ namespace TrackIt.Repository
             if (two != null)
             {
                 two.Arival=order.Arival;
-                two.Product_id=order.Product_id;
-                two.vendor=order.vendor;
+                 two.vendor=order.vendor;
                 two.vendor_id=order.vendor_id;
-                two.In_Stock=order.In_Stock;
-                two.Quantity=order.Quantity;
                 _dbSet.Update(two);
             }
         }
@@ -32,7 +29,7 @@ namespace TrackIt.Repository
         public IEnumerable<OrderClass> NewGetall()
         {
             IQueryable<OrderClass> man= _dbSet.AsQueryable();
-            man = man.Include(u => u.Product);
+            //man = man.Include(u => u.Product);
             man = man.Include("vendor");
             return man.ToList();
         }
