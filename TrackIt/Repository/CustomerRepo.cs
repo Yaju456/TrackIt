@@ -21,6 +21,7 @@ namespace TrackIt.Repository
             if(ToUpdate!=null) 
             {
                 ToUpdate.Name= customer.Name;
+                ToUpdate.PhoneNumber=customer.PhoneNumber;
                 ToUpdate.DistrictId= customer.DistrictId;
                 ToUpdate.ProvinceId= customer.ProvinceId;
                 ToUpdate.LocalBodyId= customer.LocalBodyId;

@@ -4,6 +4,26 @@
 @{
 }
 @model int
+<link rel="stylesheet" href="~/css/AutoComplete.css" />
+
+<form autocomplete="off" id="form-search">
+
+    <div class="form-group">
+        <label>Search By</label>
+        <select id="Search">
+            <option selected value="0" disabled>--select Option--</option>
+            <option value="1">Serial_no</option>
+            <option value="2">Product Name</option>
+            <option value="3">Customer Name</option>
+            <option value="4">Order no</option>
+        </select>
+    </div>
+
+    <div class="autocomplete" style="width:300px;">
+        <input id="myInput" type="text" name="myCountry" placeholder="Country">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
 
 <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -130,5 +150,6 @@
 
 @section Scripts
 {
+    <script src="~/js/Autocomplete.js"></script>
     <script src="~/js/AddSerial.js"></script>
 }

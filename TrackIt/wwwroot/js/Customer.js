@@ -1,5 +1,11 @@
-﻿$(document).ready(function () {
+﻿var nameSet = new Set();
+$(document).ready(function () {
     reloadTable();
+    fillOptions();
+
+});
+
+function fillOptions() {
     $.ajax({
         url: '/Main/getProvince',
         type: 'Get',
@@ -15,7 +21,7 @@
         }
     });
 
-   // populateDistrictSelect($("#ProvinceOption").val());
+    // populateDistrictSelect($("#ProvinceOption").val());
     $('#ProvinceOption').change(function () {
         var selectedOption = $(this).val();
         populateDistrictSelect(selectedOption);
@@ -25,9 +31,7 @@
         var selectedOption = $(this).val();
         populateLocalBodySelect(selectedOption);
     });
-
-});
-
+}
 
 function populateDistrictSelect(P_id) {
     var URL = '/Main/getDistrict/?id=' + P_id;
@@ -84,6 +88,7 @@ function reloadTable() {
                 Obj += '<tr class="text-center">';
                 Obj += '<td>' + value.id + '</td>';
                 Obj += '<td>' + value.name + '</td>';
+                nameSet.add(String(value.name).toUpperCase());
                 if (value.phoneNumber != null) {
                     Obj += '<td>' + value.phoneNumber + '</td>';
 
@@ -95,7 +100,7 @@ function reloadTable() {
                     Obj += '<td>' + value.localBody.name + '</td>';
                 }
                 Obj += '<td><button type="button" class="btn  btn-success" data-toggle="modal" data-target="#exampleModal" \
-                onclick="OneAdd(' + value.id + ', \'' + value.name + '\'' + value.phoneNumber+')"><i class="bi bi-pencil-square"></i> Edit</button></td>';                
+                onclick=OneAdd(' + value.id + ',\'' + value.name + '\',' + value.phoneNumber+')><i class="bi bi-pencil-square"></i> Edit</button></td>';                
                 Obj += '<td><a class="btn btn-danger" onclick=Delete("/Main/Delete?id=' + value.id + '")><i class="bi bi-trash"></i> Delete</a></td>';
                 Obj +='</tr>'
             });
@@ -108,7 +113,7 @@ function reloadTable() {
     })
 }
 
-function OneAdd(id, name) {
+function OneAdd(id, name, phoneNumber) {
     $("#ID").val(id);
     $("#Name").val(name);
     $("#phoneNumber").val(phoneNumber);
@@ -153,6 +158,28 @@ $("#myForm").on("submit", function (e) {
         localBodyId: LocalBody
     };
 
+    if (nameSet.has(Name.toUpperCase()) && Id==0) {
+        $.confirm({
+            title: 'Name Alread Exists!',
+            content: 'Given Customer Name Already Exists are you sure this is new Customer?',
+            buttons: {
+                confirm: function () {
+                     f_submit(obj);
+                },
+                cancel: function () {
+                    $.alert('Canceled!');
+                }
+            }
+        });
+    }
+    else {
+        f_submit(obj);
+    }
+   
+});
+
+
+function f_submit(obj) {
     $.ajax({
         url: '/Main/CustomerInfo',
         type: 'Post',
@@ -172,5 +199,5 @@ $("#myForm").on("submit", function (e) {
         error: function (how) {
             alert("Missing Form data");
         }
-    })
-});
+    });
+}

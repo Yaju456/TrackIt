@@ -1,12 +1,12 @@
 ﻿$(document).ready(function () {
+    fillCustomer();
     $("#ClientName").change(function () {
         var selectedOption = $(this).val();
         $("#ClientNumber").val(selectedOption);
     });
     reloadTable();
-
-
 });
+
 
 $("#AddProduct").on("submit", function (e) {
     e.preventDefault();
@@ -53,7 +53,26 @@ $("#AddProduct").on("submit", function (e) {
     });
 });
 
+function fillCustomer() {
+    $.ajax({
+        url: '/Main/getAllcutomer',
+        type: 'Get',
+        dataType: 'json',
+        contentType: 'application/jon; charset=utf-8',
+        success: function (result) {
+            $("#ClientName").empty();
+            $('#ClientName').append('<option disabled selected>--Select Customer--</option>');
+            $("#ClientNumber").empty();
+            $('#ClientNumber').append('<option disabled selected>--Customer Number--</option>');
 
+            $.each(result, function (index, value) {
+                $('#ClientName').append('<option value="' + value.id + '">' + value.name + '</option>');
+                $('#ClientNumber').append('<option value="' + value.id + '">' + value.phoneNumber + '</option>');
+
+            });
+        }
+    });
+}
 function reloadTable() {
     $.ajax({
         url: '/bill/getCom',
@@ -139,5 +158,13 @@ function Edit(i, product, rate, quantity) {
     $("#ProductName").val(product);
     $("#Rate").val(rate);
     $("#Quantity").val(quantity);
+
+}
+
+function Add() {
+    $("#ID").val(0);
+    $("#ProductName").val(0);
+    $("#Rate").val(0);
+    $("#Quantity").val(0);
 
 }

@@ -43,6 +43,12 @@ namespace TrackIt.Controllers
             ViewBag.ProductName=ProductName;
             return View();
         }
+
+        public JsonResult getCombill(int? id)
+        {
+            List<BillhasProductClass> data= _db.Billhasproduct.getSpecifics(u=>u.Bill_id==id, prop:"Product").ToList();
+            return Json(data);
+        }
         public JsonResult getCom()
         {
             string user_id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -50,6 +56,48 @@ namespace TrackIt.Controllers
             return new JsonResult(data);    
         }
 
+        public JsonResult stockid(int? id)
+        {
+            List<StockClass> data = _db.Stock.getSpecifics(u=>u.billhasProduct_id==id,prop:null).ToList();
+            return Json(data);
+        }
+
+        public IActionResult Deletebill(int id)
+        {
+            BillClass one = _db.Bill.GetOne(u => u.Id == id, null);
+            List<BillhasProductClass> two= _db.Billhasproduct.getSpecifics(u=>u.Bill_id== id, prop:null).ToList();
+            if (one != null)
+            {
+                try
+                {
+                    _db.Billhasproduct.DeleteMost(two);
+                    _db.Save();
+                    _db.Bill.Delete(one);
+                    _db.Save();
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Value Deleted Successfully"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ex.Message
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "No value found"
+                });
+            }
+        }
         public IActionResult DeleteCom(int id)
         {
             BillhasProductClass one = _db.Billhasproduct.GetOne(u => u.Id == id, null);
@@ -73,9 +121,9 @@ namespace TrackIt.Controllers
             }
         }
 
-        public IActionResult Check(int i)
+        public IActionResult Check(int? id)
         {
-            BillClass one = _db.Bill.GetOne(u=>u.Id == i, prop:"Customer");
+            BillClass one = _db.Bill.GetOne(u=>u.Id == id, prop: "Customer");
             return View(one);
         }
         public JsonResult AllBill()
@@ -91,26 +139,29 @@ namespace TrackIt.Controllers
         [HttpPost]
         public IActionResult Addbill(BillClass bill)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 _db.Bill.Add(bill);
                 _db.Save();
-            }
-            List<BillhasProductClass> one = _db.Billhasproduct.getSpecifics(u=>u.Bill_id==null, prop: null).ToList();
-            foreach(var data  in one) 
-            {
-                data.Bill_id = bill.Id;
-                _db.Billhasproduct.Update(data);
-                List<StockClass> To_update= _db.Stock.getSpecifics(u=>u.billhasProduct_id==data.Id, null).ToList();
-                foreach(var lita in To_update)
+
+                List<BillhasProductClass> one = _db.Billhasproduct.getSpecifics(u => u.Bill_id == null, prop: null).ToList();
+                foreach (var data in one)
                 {
-                    lita.Customer_id = bill.Customer_id;
-                    lita.InStock = "N";
-                    _db.Stock.Update(lita);
+                    data.Bill_id = bill.Id;
+                    _db.Billhasproduct.Update(data);
+                    List<StockClass> To_update = _db.Stock.getSpecifics(u => u.billhasProduct_id == data.Id, null).ToList();
+                    foreach (var lita in To_update)
+                    {
+                        lita.Customer_id = bill.Customer_id;
+                        lita.InStock = "N";
+                        _db.Stock.Update(lita);
+                    }
                 }
+                _db.Save();
+                return View();
             }
-            _db.Save();
-            return View();
+            TempData["error"] = "The bill Description was not valid";
+            return RedirectToAction("CreateBill");
         }
 
         [HttpPost]
@@ -123,11 +174,29 @@ namespace TrackIt.Controllers
             if(ModelState.IsValid)
             {
                 try
-                { 
+                {
+                    List<string> serial_no = _db.Stock.getSpecifics(u => u.serial_number != null, null).Select(u => u.serial_number).ToList();
+                    if(obj.Serial_no.Contains(null))
+                    {
+                        throw new Exception("No Serial number is provided");
+                    }
+                    if (obj.Serial_no.Distinct().Count() != obj.Serial_no.Count())
+                    {
+                        throw new Exception("Serial no not unique");
+                    }
+                    foreach (var check in obj.Serial_no)
+                    {
+                        if (serial_no.Contains(check))
+                        {
+                            throw new Exception("Serial_no error not Unique");
+                        }
+                    }
+                    
                     if (obj.Class.Id == 0)
                     {
                         int Instock_count = _db.Stock.getSpecifics(u => u.InStock == "Y" && u.Product_id == obj.Class.product_id && 
                         u.billhasProduct_id ==null, null).Count();
+                        
                         if (Instock_count < obj.Class.Quantity)
                         {
                             throw new Exception("Not Enough Item avaibale in Stock");
@@ -161,6 +230,7 @@ namespace TrackIt.Controllers
                             {
                                 if(check<obj.Class.Quantity)
                                 {
+
                                     item.serial_number = obj.Serial_no[check].ToString();
                                     check++;
                                 }
