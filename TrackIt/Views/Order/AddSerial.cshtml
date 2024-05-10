@@ -20,57 +20,12 @@
     </div>
 
     <div class="autocomplete" style="width:300px;">
-        <input id="myInput" type="text" name="myCountry" placeholder="Country">
+        <input id="myInput" type="text" name="myCountry" placeholder="Search Here">
     </div>
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
-<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Orders</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
 
-                <form id="myForm1">
-                    <div class="form-group">
-                        <label>Order No</label>
-                        <input id="Order_NO1" value="@Model" class="form-control" placeholder="Name" type="number" disabled>
-                    </div>
-                        <input id="Stock_NO1" value="0" class="form-control" placeholder="Name" type="number" disabled hidden>
-                    <div class="form-group">
-                        <label>Serial Number</label>
-                        <input id="serial_no1" type="text" class="form-control" placeholder="Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Customer</label>
-                        <select asp-items="@ViewBag.Customer_id" id="Customer1">
-                            <option selected value="0">--select Customer--</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-
-
-
-@* This is for edit *@
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -94,7 +49,7 @@
                     </div>
                     <div class="form-group">
                         <label>Customer</label>
-                        <select asp-items="@ViewBag.Customer_id" id="Customer">
+                        <select asp-items="@ViewBag.Customer_id" id="Customer" class="form-select">
                             <option selected disabled value="0">--select Customer--</option>
                         </select>
                     </div>
@@ -108,9 +63,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 
 <input hidden id="Value-id" value="@Model" />
@@ -139,7 +91,8 @@
                 Customer Name
             </th>
             <th colspan="2" class="text-center">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1"><i class="bi bi-file-earmark-plus-fill"></i> Add</button>
+                @* <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="bi bi-file-earmark-plus-fill"></i> Add</button> *@
+                Options
             </th>
         </tr>
     </thead>

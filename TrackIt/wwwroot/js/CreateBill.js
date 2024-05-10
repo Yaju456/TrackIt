@@ -1,9 +1,11 @@
-﻿$(document).ready(function () {
-    fillCustomer();
+﻿var nameSet = new Set();
+$(document).ready(function () {
     $("#ClientName").change(function () {
         var selectedOption = $(this).val();
         $("#ClientNumber").val(selectedOption);
     });
+    fillCustomer();
+    fillOptions();
     reloadTable();
 });
 
@@ -64,8 +66,8 @@ function fillCustomer() {
             $('#ClientName').append('<option disabled selected>--Select Customer--</option>');
             $("#ClientNumber").empty();
             $('#ClientNumber').append('<option disabled selected>--Customer Number--</option>');
-
             $.each(result, function (index, value) {
+                nameSet.add(String(value.name).toUpperCase());
                 $('#ClientName').append('<option value="' + value.id + '">' + value.name + '</option>');
                 $('#ClientNumber').append('<option value="' + value.id + '">' + value.phoneNumber + '</option>');
 

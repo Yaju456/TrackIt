@@ -8,7 +8,7 @@ $(document).ready(function () {
 
 $("#Search").change(function () {
     var value = $("#Search").val();
-    var data=[]
+    var data = [];
     if (value == 1) {
         data = Array.from(Serial_no);
     }
@@ -29,11 +29,11 @@ $("#form-search").on("submit", function (e) {
     e.preventDefault();
     var wh = $("#Search").val();
     var mval = String($("#myInput").val()).toUpperCase();
+   
     reloadTable(wh, mval);
 });
 function reloadTable(wh, mval) {
     var Order_id = $("#Value-id").val();
-    console.log(Order_id);
     var URL = "";
     if (Order_id == 0) {
         URL = '/order/getMost';
@@ -60,7 +60,7 @@ function reloadTable(wh, mval) {
                     one = String(value.serial_number).toUpperCase();
                 }
                 else if (wh == 2) {
-                    one = String(value.product_name).toUpperCase();
+                    one = String(value.product.name).toUpperCase();
                 }
                 else if (wh == 3) {
                     if (value.customer_id != null) {
@@ -140,7 +140,6 @@ function OneAdd(id, serial_no)
 $("#myForm").on("submit", function (e) {
     e.preventDefault();
     var Id = $("#Stock_NO").val(); 
-    console.log(Id);
     var Serial_no = $("#serial_no").val();
     var Customer_id = $("#Customer").val();
     var obj = {
@@ -173,39 +172,3 @@ $("#myForm").on("submit", function (e) {
 
 
 
-
-$("#myForm1").on("submit", function (e) {
-    e.preventDefault();
-    var Id = $("#Stock_NO1").val();
-    console.log(Id);
-    var Order_id = $("#Order_NO1").val();
-    var Serial_no = $("#serial_no1").val();
-    var Customer_id = $("#Customer1").val();
-    var obj = {
-        id: Id,
-        order_id: Order_id,
-        serial_no: Serial_no,
-        customer_id: Customer_id
-    };
-
-    $.ajax({
-        url: '/Order/AddStock',
-        type: 'Post',
-        dataType: 'json',
-        data: obj,
-        success: function (response) {
-            if (response.success) {
-                toastr["success"](response.message, "Value Added", { timeOut: 5000 });
-                document.getElementById("myForm").reset();
-                reloadTable(0,'');
-
-            }
-            else {
-                toastr["error"](response.message, "Not entered", { timeOut: 5000 });
-            }
-        },
-        error: function (how) {
-            alert("Missing Form data");
-        }
-    })
-});

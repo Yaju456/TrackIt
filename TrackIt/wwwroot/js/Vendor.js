@@ -1,8 +1,13 @@
-﻿$(document).ready(function () {
-    reloadTable();
+﻿var mySet = new Set();
+$(document).ready(function () {
+    reloadTable("");
 });
-
-function reloadTable() {
+$("#form-search").on("submit", function (e) {
+    e.preventDefault();
+    var mval = String($("#myInput").val()).toUpperCase();
+    reloadTable(mval);
+});
+function reloadTable(mval) {
     $.ajax({
         url: '/Main/GetVendor',
         type: 'Get',
@@ -11,15 +16,24 @@ function reloadTable() {
         success: function (result) {
             var Obj = "";
             $.each(result, function (index, value) {
-                Obj += '<tr class="text-center">';
-                Obj += '<td>' + value.id + '</td>';
-                Obj += '<td>' + value.name + '</td>';
-                Obj += '<td>' + value.description + '</td>';
-                Obj += '<td>' + value.phoneNumber + '</td>';
-                Obj += '<td><button type="button" class="btn  btn-success" data-toggle="modal" data-target="#exampleModal" onclick="OneAdd(' + value.id + ', \'' + value.name + '\',\'' + value.description + '\',' + value.phoneNumber +')"><i class="bi bi-pencil-square"></i> Edit</button></td>';
-                Obj += '<td><a class="btn btn-danger" onclick=Delete("/Main/DeleteVendor?id=' + value.id + '")><i class="bi bi-trash"></i> Delete</a></td>';
-                Obj += '</tr>'
+                if (mval == String(value.id).toUpperCase() || mval == String(value.name).toUpperCase() 
+                || mval == String(value.description).toUpperCase() || mval == String(value.phoneNumber).toUpperCase() || mval == "") {
+                    Obj += '<tr class="text-center">';
+                    Obj += '<td>' + value.id + '</td>';
+                    mySet.add(String(value.id).toUpperCase());
+                    Obj += '<td>' + value.name + '</td>';
+                    mySet.add(String(value.name).toUpperCase());
+                    Obj += '<td>' + value.description + '</td>';
+                    mySet.add(String(value.description).toUpperCase());
+                    Obj += '<td>' + value.phoneNumber + '</td>';
+                    mySet.add(String(value.phoneNumber).toUpperCase());
+                    Obj += '<td><button type="button" class="btn  btn-success" data-toggle="modal" data-target="#exampleModal" onclick="OneAdd(' + value.id + ', \'' + value.name + '\',\'' + value.description + '\',' + value.phoneNumber + ')"><i class="bi bi-pencil-square"></i> Edit</button></td>';
+                    Obj += '<td><a class="btn btn-danger" onclick=Delete("/Main/DeleteVendor?id=' + value.id + '")><i class="bi bi-trash"></i> Delete</a></td>';
+                    Obj += '</tr>'
+                }
+                
             });
+            autocomplete(document.getElementById("myInput"), Array.from(mySet));
             $("#t-body").html(Obj);
 
         },
@@ -46,7 +60,7 @@ function Delete(Url) {
                     type: 'delete',
                     success: function (data) {
                         toastr["success"](data.message, "Value Deleted", { timeOut: 5000 });
-                        reloadTable();
+                        reloadTable("");
                     },
 
                 })
@@ -80,7 +94,7 @@ $("#myForm").on("submit", function (e) {
             if (response.success) {
                 toastr["success"](response.message, response.type, { timeOut: 5000 });
                 document.getElementById("myForm").reset();
-                reloadTable();
+                reloadTable("");
 
             }
             else {

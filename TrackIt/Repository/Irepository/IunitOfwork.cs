@@ -16,6 +16,8 @@
         public Ibill? Bill { get;}
 
         public IbillhasProduct? Billhasproduct { get;}
+
+        public IPayment? Payment { get;}
         void Save();
     }
 }

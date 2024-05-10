@@ -20,6 +20,7 @@ namespace TrackIt.Repository
             {
                 billClass.Description = bill.Description;
                 billClass.total = bill.total;
+                billClass.Date = bill.Date;
                 billClass.Customer_id = bill.Customer_id;
                 _billSet.Update(billClass);
             }

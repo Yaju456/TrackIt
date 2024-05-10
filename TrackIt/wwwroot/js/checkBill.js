@@ -1,8 +1,57 @@
 ﻿$(document).ready(function(){
     reloadTable();
-    
 });
 
+function PView() {
+    var URL = '/bill/lokPay?id=' + $("#Bid").val();
+    $.ajax({
+        url: URL,
+        data: 'json',
+        type: 'Get',
+        contentType: 'application/json; charset= utf-8;',
+        success: function (result) {
+            var Obj = "";
+            $.each(result, function (index, value) {
+                Obj += '<tr>';
+                Obj += '<td>' + String(value.date).slice(0, 10) + '</td>';
+                Obj += '<td>' + value.method + '</td>';
+                Obj += '<td>' + value.amount + '</td>';
+                Obj += '<td>' + value.commission + '</td>';
+                Obj += '<td>' + value.commissionper + ' %</td>';
+                Obj += '<td>' + value.userName + ' </td>';
+                Obj += '<td><a class="btn btn-danger" onclick=DeletePayment(' + value.id + ')>Delete</a>';
+                Obj += '</td>';
+            });
+            $("#Pd-body").html(Obj);
+        }
+    })
+}
+
+function DeletePayment(id) {
+    var Url = '/bill/deletePayment?id=' + id;
+    $.confirm({
+        title: 'Confirm!',
+        content: 'Simple confirm!',
+        buttons: {
+            confirm: function () {
+                $.ajax({
+                    url: Url,
+                    type: 'delete',
+                    success: function (data) {
+                        toastr["success"](data.message, "Value Deleted", { timeOut: 5000 });
+                        $("#Payment").val(data.pay);
+                        PView();
+                        reloadTable();
+                    },
+
+                })
+            },
+            cancel: function () {
+                $.alert('Canceled!');
+            }
+        }
+    });
+}
 function View(id) {
     var URL = '/bill/stockid?id=' + id;
     $.ajax({
@@ -11,7 +60,7 @@ function View(id) {
         type: 'Get',
         contentType: 'application/json; charset= utf-8;',
         success: function (result) {
-            var Obj = ""
+            var Obj = "";
             $.each(result, function (index, value) {
                 Obj += '<tr>';
                 Obj += '<td>' + value.serial_number + '</td>';
@@ -40,7 +89,23 @@ function calVat()
     var after_vat = after_TDS + Number($("#VAT").html());
     console.log(Number($("#t-otal").html()));
     console.log(after_vat);
-    if (payment >= after_TDS && payment <= after_vat)
+    if (payment < after_TDS) {
+        var Obj = '<tr class="ToRemove1">';
+        Obj += '<td><td>';
+        Obj += '<th>Note</th>';
+        Obj += '<td >Payment not enough to calculate VAT</td>';
+        Obj += '</tr>';
+        $("#t-body").append(Obj);
+    } else if (payment >after_vat)
+    {
+        var Obj = '<tr class="ToRemove1">';
+        Obj += '<td><td>';
+        Obj += '<th>Note</th>';
+        Obj += '<td >Something Went Wrong Payment is more than required amt</td>';
+        Obj += '</tr>';
+        $("#t-body").append(Obj);
+    }
+    else
     {
 
 
@@ -123,3 +188,47 @@ function reloadTable() {
         }
     });
 }
+
+$("#PaymentForm").on("submit", function (e) {
+    e.preventDefault();
+    var Id = 0;
+    var Mthod = $("#Pmethod").val();
+    var Amount = $("#PAmount").val();
+    var pDate = $("#PDate").val();
+    var Bill_id = $("#Bid").val();
+    var User_id = $("#Userid").val();
+    var commission = $("#Commission").val();
+    var obj = {
+        id: Id,
+        method: Mthod,
+        amount: Amount,
+        date: pDate,
+        bill_id: Bill_id,
+        commissionper: commission,
+        UserId: User_id
+    }
+    console.log(obj);
+    $.ajax({
+        url: '/bill/Paid',
+        type: 'Post',
+        dataType: 'json',
+        data: obj,
+        success: function (response) {
+            if (response.success) {
+                toastr["success"](response.message, "Payment Added", { timeOut: 5000 });
+                $("#Payment").val(response.pay);
+                document.getElementById("PaymentForm").reset();
+                reloadTable();
+            }
+            else {
+                toastr["error"](response.message, "Not entered", { timeOut: 5000 });
+            }
+        },
+        error: function (xhr, textStatus, error) {
+            console.log("error");
+            alert(xhr.statusText);
+            console.log(textStatus);
+            console.log(error);
+        }
+    });
+});

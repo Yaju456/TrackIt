@@ -1,7 +1,13 @@
-﻿$(document).ready(function () {
-    reloadTable();
+﻿var mySet = new Set();
+$(document).ready(function () {
+    reloadTable("");
 });
-function reloadTable() {
+$("#form-search").on("submit", function (e) {
+    e.preventDefault();
+    var mval = String($("#myInput").val()).toUpperCase();
+    reloadTable(mval);
+});
+function reloadTable(mval) {
     $.ajax({
         url: '/Product/GetAll',
         type: 'Get',
@@ -11,22 +17,32 @@ function reloadTable() {
             var Obj = "";
             var Instock = "";
             $.each(result, function (index, value) {
-                Obj += '<tr>';
-                Obj += '<td>' + value.id + '</td>';
-                Obj += '<td>' + value.name + '</td>';
-                Obj += '<td>' + value.description + '</td>';
-                Obj += '<td>' + value.category + '</td>';
-                Obj += '<td>' + value.company + '</td>';
-                if (typeof value.in_stock != "number") {
-                    Instock = 0;
-                }
-                else {
-                    Instock = value.in_stock;
-                }
-                Obj += '<td>' + Instock + '</td>';
-                Obj += '<td><a class="btn btn-danger" onclick=Delete("/Product/Delete?id=' + value.id + '")><i class="bi bi-trash"></i> Delete</a></td>';
+                if (mval == "" || mval == String(value.id).toUpperCase()
+                    || mval == String(value.name).toUpperCase() || mval == String(value.description).toUpperCase() ||
+                    mval == String(value.category).toUpperCase() || mval == String(value.company).toUpperCase()) {
+                    Obj += '<tr>';
+                    Obj += '<td>' + value.id + '</td>';
+                    mySet.add(String(value.id).toUpperCase());
+                    Obj += '<td>' + value.name + '</td>';
+                    mySet.add(String(value.name).toUpperCase());
+                    Obj += '<td>' + value.description + '</td>';
+                    mySet.add(String(value.description).toUpperCase());
+                    Obj += '<td>' + value.category + '</td>';
+                    mySet.add(String(value.category).toUpperCase());
+                    Obj += '<td>' + value.company + '</td>';
+                    mySet.add(String(value.company).toUpperCase());
+                    if (typeof value.in_stock != "number") {
+                        Instock = 0;
+                    }
+                    else {
+                        Instock = value.in_stock;
+                    }
+                    Obj += '<td>' + Instock + '</td>';
+                    Obj += '<td><a class="btn btn-danger" onclick=Delete("/Product/Delete?id=' + value.id + '")><i class="bi bi-trash"></i> Delete</a></td>';
 
+                }
             });
+            autocomplete(document.getElementById("myInput"), Array.from(mySet));
             $("#t-body").html(Obj);
         },
         error: function () {
@@ -48,7 +64,7 @@ function Delete(Url)
                     type: 'delete',
                     success: function (data) {
                         toastr["success"](data.message, "Value Deleted", { timeOut: 5000 });
-                        reloadTable();
+                        reloadTable("");
                     },
 
                 })
@@ -83,7 +99,7 @@ $("#my-form").on("submit", function (e) {
             if (response.success) {
                 toastr["success"](response.message, "Value Added", { timeOut: 5000 });
                 document.getElementById("my-form").reset();
-                reloadTable();
+                reloadTable("");
             }
             else {
                 toastr["error"](response.message, "Not entered", { timeOut: 5000 });

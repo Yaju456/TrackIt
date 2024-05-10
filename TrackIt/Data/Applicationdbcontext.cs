@@ -38,6 +38,8 @@ namespace TrackIt.Data
 
         public DbSet<BillClass> Bill { get; set; }
         public DbSet<BillhasProductClass> billhasProduct { get; set; }
+
+        public DbSet<PaymentClass> Payment { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -45,7 +47,11 @@ namespace TrackIt.Data
             modelBuilder.Entity<OrderClass>().HasIndex(a=>a.Invoice_no).IsUnique();
             modelBuilder.Entity<CustomerClass>().HasCheckConstraint("PhoneNumberCheck", "PhoneNumber between 9800000000 and 9899999999");
             modelBuilder.Entity<ProvinceClass>().ToTable("Province");
-
+            modelBuilder.Entity<PaymentClass>()
+                .HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .IsRequired(false);
         }
     }
 }

@@ -171,14 +171,14 @@ namespace TrackIt.Controllers
         }
         public IActionResult AddSerial(int? id)
         {
-            if(id!=null)
+            IEnumerable<SelectListItem> Customer_id = _db.customer.getAll(prop: null).Select(u => new SelectListItem
             {
-                IEnumerable < SelectListItem > Customer_id = _db.customer.getAll(prop: null).Select(u => new SelectListItem
-                {
-                    Text = u.Id + " " + u.Name,
-                    Value = u.Id.ToString()
-                });
-                ViewBag.Customer_id = Customer_id;
+                Text = u.Id + " " + u.Name,
+                Value = u.Id.ToString()
+            });
+            ViewBag.Customer_id = Customer_id;
+            if (id!=null)
+            {
                 return View(id);
             }
             else
@@ -194,25 +194,45 @@ namespace TrackIt.Controllers
             {
                 try
                 {
-                    StockClass one = _db.Stock.GetOne(u => u.Id == data.id, prop: null);
-                    one.serial_number = data.serial_no;
-                    if(data.customer_id!=null)
+                    if(data.id!=0)
                     {
-                        one.Customer_id = data.customer_id;
-                        one.InStock = "N";
+                        StockClass one = _db.Stock.GetOne(u => u.Id == data.id, prop: null);
+                        one.serial_number = data.serial_no;
+                        if (data.customer_id != null)
+                        {
+                            one.Customer_id = data.customer_id;
+                            one.InStock = "N";
+                        }
+                        else
+                        {
+                            one.InStock = "Y";
+                        }
+                        _db.Stock.Update(one);
+                        _db.Save();
+
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Value Updated"
+                        });
                     }
                     else
                     {
-                        one.InStock = "Y";
+                        StockClass one = new StockClass();
+                        one.Id = data.id;
+                        one.serial_number= data.serial_no;
+                        one.Customer_id= data.customer_id;
+                        one.InStock="Y";
+                        _db.Stock.Add(one);
+                        _db.Save();
+
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Value Added"
+                        });
                     }
-                    _db.Stock.Update(one);
-                    _db.Save();
-                  
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Serial Number Updated"
-                    });
+                   
                 }
                 catch (Exception ex)
                 {

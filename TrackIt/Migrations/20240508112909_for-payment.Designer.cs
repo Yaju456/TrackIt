@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrackIt.Data;
 
@@ -11,9 +12,11 @@ using TrackIt.Data;
 namespace TrackIt.Migrations
 {
     [DbContext(typeof(Applicationdbcontext))]
-    partial class ApplicationdbcontextModelSnapshot : ModelSnapshot
+    [Migration("20240508112909_for-payment")]
+    partial class forpayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,7 +243,6 @@ namespace TrackIt.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("Date")
-                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -499,9 +501,6 @@ namespace TrackIt.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
-
                     b.Property<int>("Bill_id")
                         .HasColumnType("int");
 
@@ -513,22 +512,9 @@ namespace TrackIt.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<float?>("commission")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("commissionper")
-                        .HasColumnType("real");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Bill_id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Payment");
                 });
@@ -852,13 +838,7 @@ namespace TrackIt.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Bill");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TrackIt.Models.StockClass", b =>

@@ -26,6 +26,8 @@ namespace TrackIt.Repository
 
         public IbillhasProduct? Billhasproduct { get; private set; }
 
+        public IPayment? Payment { get; private set; }
+
         public UnitofWork(Applicationdbcontext db)
         {
             _db = db;
@@ -39,6 +41,7 @@ namespace TrackIt.Repository
             Bucket= new BucketRepo(db);
             Bill= new BillRepo(db);
             Billhasproduct= new billhasProductRepo(db);
+            Payment= new PaymentRepo(db);
 
         }
         public void Save()

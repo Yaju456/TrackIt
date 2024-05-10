@@ -5,7 +5,7 @@
 }
 @model VendorClass
 
-
+<link rel="stylesheet" href="~/css/AutoComplete.css" />
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -47,7 +47,14 @@
     </div>
 </div>
 
+<form autocomplete="off" id="form-search">
 
+    <div class="autocomplete" style="width:50%;">
+        <input id="myInput" type="text" name="myCountry" placeholder="Text Here">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+<br />
 
 <table class="table">
     <thead>
@@ -76,6 +83,7 @@
 
 @section Scripts
 {
+    <script src="~/js/Autocomplete.js"></script>
     <script src="~/js/Vendor.js"></script>
 }
 

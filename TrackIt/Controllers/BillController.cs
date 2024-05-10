@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
+using TrackIt.Migrations;
 using TrackIt.Models;
 using TrackIt.PreData;
 using TrackIt.Repository;
@@ -11,7 +12,7 @@ using TrackIt.ViewModel;
 
 namespace TrackIt.Controllers
 {
-    [Authorize(Roles = Roll.client+","+Roll.Admin)]
+    [Authorize(Roles = Roll.Admin)]
     public class BillController : Controller
     {
         private readonly IunitOfwork _db;
@@ -123,13 +124,59 @@ namespace TrackIt.Controllers
 
         public IActionResult Check(int? id)
         {
+            IEnumerable<SelectListItem> userList = _userManager.Users.Select(u => new SelectListItem
+            {
+                Text = u.UserName,
+                Value = u.Id.ToString()
+            });
             BillClass one = _db.Bill.GetOne(u=>u.Id == id, prop: "Customer");
+            ViewBag.userList = userList;
             return View(one);
         }
         public JsonResult AllBill()
         {
             List<BillClass> data = _db.Bill.getAll(prop: "Customer").ToList();
             return new JsonResult(data);
+        }
+
+        public JsonResult lokPay(int? id)
+        {
+            var list = _db.Payment.getSpecifics(u => u.Bill_id == id, prop: "User").Select(u=> new {
+                id=u.Id,
+                date= u.Date,
+                method=u.Method,
+                amount=u.Amount,
+                commission=Convert.ToString(u.commission),
+                commissionper=Convert.ToString(u.commissionper),
+                userName=Convert.ToString(u.User.UserName)
+            }).ToList();
+            return Json(list);
+        }
+
+        public IActionResult DeletePayment(int? id)
+        {
+            PaymentClass one = _db.Payment.GetOne(u => u.Id == id, null);
+            if( one!=null)
+            {
+                BillClass billone = _db.Bill.GetOne(u => u.Id == one.Bill_id, null);
+                billone.payment -= one.Amount;
+                _db.Payment.Delete(one);
+                _db.Bill.Update(billone);               
+                _db.Save();
+                return Json(new
+                {
+                    success = true,
+                    message = "Payment record deleted",
+                    pay = billone.payment
+                });
+            }
+            else
+            {
+                return Json(new {
+                    success=false,
+                    message="No payment found"
+                });
+            }
         }
         public IActionResult Addbill()
         {
@@ -164,6 +211,76 @@ namespace TrackIt.Controllers
             return RedirectToAction("CreateBill");
         }
 
+        [HttpPost]
+        public IActionResult Paid(PaymentClass obj) 
+        {
+            if(ModelState.IsValid)
+            {
+                bool Sucess;
+                string mesage;
+                int paymentamt=0;
+                try
+                {
+                    BillClass bill = _db.Bill.GetOne(u => u.Id == obj.Bill_id, prop: null);
+                    
+                    if (obj.Id == 0)
+                    {
+                        if (bill == null)
+                        {
+                            throw new Exception("No bill found");
+                        }
+                        bill.payment = Convert.ToInt32(bill.payment) + obj.Amount;
+                        obj.commission = (obj.Amount * obj.commissionper) / 100;
+                        _db.Bill.Update(bill);
+                        _db.Payment.Add(obj);
+                        _db.Save();
+                        Sucess=true;
+                        mesage = "Payment Successfully Added";
+                        paymentamt = Convert.ToInt32(bill.payment);
+                    }
+                    else
+                    {
+                        PaymentClass wow= _db.Payment.GetOne(u=>u.Id== obj.Id, prop: null);
+                        if( wow == null) 
+                        {
+                            throw new Exception("NO payment of the given Id found");
+                        }
+                        if (bill == null)
+                        {
+                            throw new Exception("No bill found");
+                        }
+                        bill.payment=bill.payment-wow.Amount+obj.Amount;
+                        _db.Bill.Update(bill);
+                        _db.Payment.Update(obj);
+                        _db.Save();
+                        Sucess= true;
+                        mesage = "Payment Succesfully Updated";
+                        paymentamt = Convert.ToInt32(bill.payment);
+                    }
+
+                } 
+                catch (Exception ex)
+                {
+                    Sucess = false;
+                    mesage=ex.Message;
+                    
+                }
+                return Json(new 
+                    {
+                        success= Sucess,
+                        message= mesage,
+                        pay=paymentamt,
+                    });
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Modal State not valid"
+                });
+            }
+        }
         [HttpPost]
         public IActionResult addCom(BillhasProductVM obj)
         {

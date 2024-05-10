@@ -20,6 +20,9 @@ namespace TrackIt.Models
         [Required]
         public double total { get; set; }
 
+        [Required]
+        public DateTime? Date {  get; set; } 
+
         public double? payment { get; set; }
     }
 }
